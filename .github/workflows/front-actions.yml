@@ -5,14 +5,14 @@ name: Front-end Actions CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -21,25 +21,26 @@ jobs:
     steps:
       # Clone repo
       - uses: actions/checkout@v4
-  
-      # Setup 
+
+      # Setup
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      
+          cache-dependency-path: front/package-lock.json
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build with Node
         run: npm run build --if-present
-      
+
       - name: Run tests with coverage
         run: npm test -- --code-coverage
-      
+
       - name: Upload tests coverage report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.node-version }}
-          path: coverage/ 
+          path: coverage/
