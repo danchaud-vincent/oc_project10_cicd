@@ -1,0 +1,32 @@
+version: '3.8'
+
+# SERVICES
+services:
+  # Back service
+  back:
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    image: bobapp-back:latest
+    container_name: backend
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+  
+  # Front service
+  front:
+    build: 
+      context: ./front
+      dockerfile: Dockerfile
+    image: bobapp-front:latest
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - back
+    restart: unless-stopped
+  
+
+
+
+
