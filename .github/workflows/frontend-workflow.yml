@@ -105,5 +105,5 @@ jobs:
           file: ./front/Dockerfile
           push: true
           tags: |
-            vincent0912/bobapp:latest
-            vincent0912/bobapp:${{ github.sha }}
+            vincent0912/bobapp-frontend:latest
+            vincent0912/bobapp-frontend:${{ github.sha }}
