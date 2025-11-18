@@ -27,6 +27,7 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
+    needs: build
 
     defaults:
       run:
@@ -74,5 +75,5 @@ jobs:
           file: ./front/Dockerfile
           push: true
           tags: |
-            vincent0912/bobapp-frontend:latest
-            vincent0912/bobapp-frontend:${{ github.sha }}
+            vincent0912/bobapp-backend:latest
+            vincent0912/bobapp-backend:${{ github.sha }}
