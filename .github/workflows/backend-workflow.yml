@@ -79,7 +79,7 @@ jobs:
       - name: Run SonarCloud Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=danchaud-vincent_oc_project10_cicd_backend
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=danchaud-vincent_bobapp-backend
 
   docker:
     name: Build and push docker images
