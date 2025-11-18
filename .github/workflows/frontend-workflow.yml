@@ -1,4 +1,4 @@
-name: Frontend Workflow CI/CD
+name: Front-end Workflow CI/CD
 
 on:
   push:
@@ -90,9 +90,9 @@ jobs:
         with:
           projectBaseDir: front
           args: >
-            -Dsonar.projectName="Bobapp Frontend"
+            -Dsonar.projectName="bobapp-frontend"
             -Dsonar.organization=danchaud-vincent
-            -Dsonar.projectKey=oc_project10_cicd_frontend
+            -Dsonar.projectKey=bobapp-frontend
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts
