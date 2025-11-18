@@ -85,14 +85,14 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Run SonarCloud Analysis
-        uses: sonarsource/sonarcloud-github-action@v5.0.0
+      - name: Run SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
         with:
           projectBaseDir: front
           args: >
             -Dsonar.projectName="bobapp-frontend"
             -Dsonar.organization=danchaud-vincent
-            -Dsonar.projectKey=bobapp-frontend
+            -Dsonar.projectKey=danchaud-vincent_bobapp-frontend
             -Dsonar.sources=src
             -Dsonar.tests=src
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts
