@@ -1,54 +1,25 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Front-end Actions CI/CD
+name: Frontend Workflow CI/CD
 
 on:
   push:
     branches: ['main', 'dev/*']
+    paths:
+      - 'front/**'
+      - '.github/workflows/frontend-workflow.yml'
   pull_request:
     branches: ['main', 'dev/*']
+    paths:
+      - 'front/**'
+      - '.github/workflows/frontend-workflow.yml'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./front
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    steps:
-      # Clone repo
-      - uses: actions/checkout@v4
-
-      # Setup
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: front/package-lock.json
-
-      # Install dependencies
-      - name: Install dependencies
-        run: npm ci
-
-      # Build
-      - name: Build with Node
-        run: npm run build --if-present
-
   tests:
+    name: Build, tests and coverage
     runs-on: ubuntu-latest
-    needs: build
 
     defaults:
       run:
-        working-directory: ./front
+        working-directory: front
 
     strategy:
       matrix:
@@ -70,20 +41,68 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Build
+      - name: Build with Node
+        run: npm run build --if-present
+
       # Run test
       - name: Run tests with coverage
         run: npm run test -- --no-watch --no-progress --browsers ChromeHeadless --code-coverage
 
       # Upload coverage report
       - name: Upload tests coverage report
+        if: matrix.node-version == '20.x'
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-${{ matrix.node-version }}
-          path: ./front/coverage/**
+          name: coverage
+          path: front/coverage/**
+
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: tests
+
+    defaults:
+      run:
+        working-directory: front
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
+          path: front/coverage
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run SonarCloud Analysis
+        uses: sonarsource/sonarcloud-github-action@v4
+        with:
+          projectBaseDir: front
+          args: >
+            -Dsonar.projectName="Bobapp Frontend"
+            -Dsonar.organization=danchaud-vincent
+            -Dsonar.projectKey=oc_project10_cicd_frontend
+            -Dsonar.sources=src
+            -Dsonar.tests=src
+            -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   docker:
     runs-on: ubuntu-latest
-    needs: tests
+    needs: sonarcloud
 
     steps:
       # Clone repo
