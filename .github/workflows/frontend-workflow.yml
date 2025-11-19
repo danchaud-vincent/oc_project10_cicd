@@ -90,7 +90,7 @@ jobs:
         with:
           projectBaseDir: front
           args: >
-            -Dsonar.projectName="bobapp-frontend"
+            -Dsonar.projectName=bobapp-frontend
             -Dsonar.organization=danchaud-vincent
             -Dsonar.projectKey=danchaud-vincent_bobapp-frontend
             -Dsonar.sources=src
