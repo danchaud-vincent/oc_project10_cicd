@@ -95,7 +95,8 @@ jobs:
             -Dsonar.projectKey=danchaud-vincent_bobapp-frontend
             -Dsonar.sources=src
             -Dsonar.tests=src
-            -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts
+            -Dsonar.test.inclusions=**/*.spec.ts
+            -Dsonar.coverage.exclusions=**/main.ts,**/test.ts,**/environments/**,**/polyfills.ts
             -Dsonar.javascript.lcov.reportPaths=coverage/bobapp/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
