@@ -32,6 +32,14 @@ module.exports = function (config) {
         { type: "lcovonly", file: "lcov.info" },
         { type: "text-summary" },
       ],
+      check: {
+        global: {
+          statements: 70,
+          branches: 70,
+          functions: 70,
+          lines: 70,
+        },
+      },
     },
     reporters: ["progress", "kjhtml"],
     port: 9876,
