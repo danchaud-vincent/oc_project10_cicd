@@ -87,7 +87,7 @@ jobs:
 
       - name: Run SonarQube Scan
         id: sonar-scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@master
         with:
           projectBaseDir: front
           args: >
@@ -101,9 +101,15 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      # - name: Show SonarQube Quality Gate results
-      #   run: |
-      #     echo "Quality gate status: ${{ steps.sonar-scan.outputs.quality-gate-status }}"
+      - name: SonarQube Quality Gate check
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          pollingTimeoutSec: 600
+          scanMetadataReportFile: target/sonar/report-task.txt
+
+      - name: 'Example show SonarQube Quality Gate Status value'
+        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
 
   docker:
     runs-on: ubuntu-latest
