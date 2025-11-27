@@ -104,6 +104,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: sonarcloud
 
+    if: github.ref == 'refs/heads/main'
+
     steps:
       # Clone repo
       - uses: actions/checkout@v4
