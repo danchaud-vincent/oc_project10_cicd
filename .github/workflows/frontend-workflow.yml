@@ -85,9 +85,9 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Run SonarQube Scan
-        id: sonar-scan
-        uses: SonarSource/sonarqube-scan-action@master
+      # Triggering SonarQube analysis as results of it are required by Quality Gate check.
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
         with:
           projectBaseDir: front
           args: >
@@ -101,17 +101,47 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+      # Check the Quality Gate status.
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
           pollingTimeoutSec: 600
-          scanMetadataReportFile: front/target/sonar/report-task.txt
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+      # Optionally you can use the output from the Quality Gate in another step.
+      # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
       - name: 'Example show SonarQube Quality Gate Status value'
         run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+
+      # - name: Run SonarQube Scan
+      #   id: sonar-scan
+      #   uses: SonarSource/sonarqube-scan-action@master
+      #   with:
+      #     projectBaseDir: front
+      #     args: >
+      #       -Dsonar.projectName="bobapp-frontend"
+      #       -Dsonar.organization=danchaud-vincent
+      #       -Dsonar.projectKey=danchaud-vincent_bobapp-frontend
+      #       -Dsonar.sources=src
+      #       -Dsonar.tests=src
+      #       -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts
+      #       -Dsonar.javascript.lcov.reportPaths=coverage/bobapp/lcov.info
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # - name: SonarQube Quality Gate check
+      #   id: sonarqube-quality-gate-check
+      #   uses: sonarsource/sonarqube-quality-gate-action@master
+      #   with:
+      #     pollingTimeoutSec: 600
+      #     scanMetadataReportFile: front/target/sonar/report-task.txt
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # - name: 'Example show SonarQube Quality Gate Status value'
+      #   run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
 
   docker:
     runs-on: ubuntu-latest
