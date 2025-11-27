@@ -86,6 +86,7 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
 
       - name: Run SonarQube Scan
+        id: sonar-scan
         uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: front
@@ -97,8 +98,13 @@ jobs:
             -Dsonar.tests=src
             -Dsonar.test.inclusions=**/*.spec.ts,**/*.test.ts
             -Dsonar.javascript.lcov.reportPaths=coverage/bobapp/lcov.info
+            -Dsonar.qualitygate.wait=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Show SonarQube Quality Gate result
+        run: |
+          echo "Quality gate status: ${{ steps.sonar-scan.outputs.quality-gate-status }}"
 
   docker:
     runs-on: ubuntu-latest
